@@ -1,0 +1,26 @@
+function PhiH = H_Hatt(p,i,x)
+% H_Hatt berskriver den högra delen av en hatt funktion
+%
+%      \
+%       \
+%        \
+%         \
+%    ______\
+%
+% H_Hatt behöver en disktetiserad x vektor ett index i som talar om vilken 
+% hatt funktion det är som skall behandlas. H_Hatt behöver också ett fixt x värde
+% där man utvärderar hattfunktionen.
+
+if i~=length(p)                                     % alla utom sista hattfunktionen defineras enligt nedanstående ekv. 
+                                                    % kommer att vara en halv hatt och ej innehålla en höger del.
+    if x>=p(i) && x<=p(i+1)                         % Om x ej tillhör det diskretiserade delintervallet är hatt funktionen 0
+        PhiH= (p(i+1)-x)/(p(i+1)-p(i));             % Hattfunktionens högra del är definerad enligt denna ekv.
+    else
+        PhiH=0;
+    end
+elseif i==length(p)                                 % Den sista hatt funktionen på det disktetiserade intervallet
+    PhiH=0;
+    
+    
+    
+end

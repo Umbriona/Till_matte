@@ -1,0 +1,75 @@
+function M=M_Matrix(p)
+% M_Matrix skapar mass matrisen med hjälp av Hatt 
+% In data till M_Matrix är intervall diskretiseringen av x
+
+M=zeros(length(p));                     % Skapar en matris av storlek(N/N) vars element är =0
+
+        for i=1:length(p)               % Loop som går över alla hatt funktioner, index i beskriver rader
+            if i==1                     % index j beskriver kolumner i M 
+                j=i:i+1;                % eftersom ekvationen beskriver överlappet av de två hatt funktonerna
+            elseif i~=length(p)         % kommer j endast att gå mellan i-1 till i+1.
+                j=i-1:i+1;              % för att undvika onödiga beräkningar definierar vi j på detta sätt
+            elseif i==length(p)
+                j=i-1:i;
+            end
+            for j=j                     % I denna loop tas alltså det redan defenierade j indexet
+
+                if i==1                 % Eftersom vi inte har någon vänster del av hattfunktionen_1 delas for loppen upp i tre delar.
+
+                    
+                    % Anger om overlappet med Phi(i) är på vänster eller höger sida 
+                    if i==j
+                        
+                        o=2;            % o avgör om den andra hattfunktionen överlappar med        
+                    elseif j==i+1       % vänster eller höger del av hattfunktionen
+                        
+                        o=1;
+                    end
+
+
+                    M(i,j)=(Hatt(p,i,p(i),2,0)*Hatt(p,j,p(i),o,0)+...                           % M skapas med att medhjälp av simpsons rgel för att få arean under överlappet  
+                          4*Hatt(p,i,(p(i+1)+p(i))/2,2,0)*Hatt(p,j,((p(i)+p(i+1))/2),o,0)+...   % mellan de två hattfunktionerna, där index j bestämmer index påhattfunktion nr. två 
+                          Hatt(p,i,p(i+1),2,0)*Hatt(p,j,p(i+1),o,0))...
+                          /6*(p(i+1)-p(i));
+
+                elseif  i~=length(p)        % Då hattfunktion i ej är någon utav kant funktionerna  
+                    
+                    if j==i-1
+                        o=2;                % o Och O är index som går in i funktionen Hatt för att avgöra om det är 
+                        O=1;                % den högra eller vänstra delen av hattfunkrionen som skall användas
+                    elseif j==i
+                        O=2;
+                        o=1;
+                    elseif j==i+1
+                        O=1;
+                        o=2;
+                    end
+
+
+                    M(i,j)=(Hatt(p,i,p(i),1,0)*Hatt(p,j,p(i),o,0)+...                               % Då i är skilt från 1 och N så går j från i-1 - i+1
+                           4*Hatt(p,i,(p(i-1)+p(i))/2,1,0)*Hatt(p,j,((p(i)+p(i-1))/2),o,0)+...
+                           Hatt(p,i,p(i-1),1,0)*Hatt(p,j,p(i-1),o,0))...                            % Då i=j kommer båda delarna av ekvationen att vara skilt ifrån 0
+                           /6*(p(i)-p(i-1));
+                    M(i,j)=M(i,j)+(Hatt(p,i,p(i+1),2,0)*Hatt(p,j,p(i+1),O,0)+...
+                        4*Hatt(p,i,((p(i+1)+p(i))/2),2,0)*Hatt(p,j,((p(i+1)+p(i))/2),O,0)+...       % Om j=1+-i kommer en av delarna att vara =0   
+                         Hatt(p,i,p(i),2,0)*Hatt(p,j,p(i),O,0))...
+                         /6*(p(i+1)-p(i));
+
+                elseif i==length(p)
+                    if j==i-1
+                        o=2;
+                    elseif j==i 
+                        o=1;
+                    end
+
+                    M(i,j)=(Hatt(p,i,p(i-1),1,0)*Hatt(p,j,p(i-1),o,0)+...                       % Ekvationen då i=N
+                        4*Hatt(p,i,((p(i-1)+p(i))/2),1,0)*Hatt(p,j,((p(i-1)+p(i))/2),o,0)+...
+                         Hatt(p,i,p(i),1,0)*Hatt(p,j,p(i),o,0))...
+                         /6*(p(i)-p(i-1));
+                end
+                if j==length(p)
+                    break
+                end
+            end
+        end
+end
